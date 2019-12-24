@@ -1,0 +1,17 @@
+<ul class="list-group">
+    {% for todo in todos %}
+        <li class="list-group-item">
+            <div class="row">
+                <div class="col-md-10">
+                    <span>{{todo.name_with_priority()}}</span>
+                </div>
+                <div class="col-md-2">
+                    <form method="post" action="/delete-todo/">
+                        <input type="hidden" name="id" value="{{ todo.id }}">
+                        <input type="submit" class="btn btn-success" value="Done">
+                    </form>
+                </div>
+            </div>
+        </li>
+    {% end %}
+</ul>

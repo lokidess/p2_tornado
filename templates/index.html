@@ -1,0 +1,62 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function () {
+            var ws = new WebSocket("ws://127.0.0.1:8888/todo-update/");
+            ws.onmessage = function (evt) {
+                // тут я ловлю сообщение от сокета в котором у меня новый список todo
+                // и вставляю его на место старого списка при помощи не хитрых манипуляций с
+                // jQuery
+               $('#todo-list').html(evt.data);
+            };
+        });
+    </script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6" id="todo-list">
+                    <ul class="list-group">
+                        {% for todo in todos %}
+                            <li class="list-group-item">
+                                <div class="row">
+                                    <div class="col-md-10">
+                                        <span>{{todo.name_with_priority()}}</span>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <form method="post" action="/delete-todo/">
+                                            <input type="hidden" name="id" value="{{ todo.id }}">
+                                            <input type="submit" class="btn btn-success" value="Done">
+                                        </form>
+                                    </div>
+                                </div>
+                            </li>
+                        {% end %}
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    {% if error %}
+                        <h1>Hey! You stupid bastard!</h1>
+                    {% end %}
+                    <form class="form" method="post" action="/">
+                      <div class="form-group mx-sm-3 mb-2">
+                          <textarea name="todo-text" class="form-control" id="to-do" placeholder="Add todo"></textarea>
+                      </div>
+                      <div class="form-group mx-sm-3 mb-2">
+                          <select name="priority" class="form-control">
+                            {% for priority in priority_choices %}
+                                <option value="{{ priority }}">{{ priority }}</option>
+                            {% end %}
+                          </select>
+                      </div>
+                      <button type="submit" class="btn btn-primary mb-2">Add todo</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
